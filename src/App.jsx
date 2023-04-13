@@ -30,9 +30,6 @@ function App() {
     buscarImagenPerro();
   };
 
-  function capFirst(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
 
   return (
     <Box justifyContent="space-between">
