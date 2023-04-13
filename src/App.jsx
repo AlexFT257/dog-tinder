@@ -1,34 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import { Box, Grid, Card, CardContent, Typography, List, ListItem, TextField, Button } from "@mui/material";
+import axios from "axios";
+import dogNames from "dog-names"
 
 function App() {
-  const [count, setCount] = useState(0)
+
+
+  const [listaRechazados, setListaRechazados] = useState([]);
+  const [listaAceptados, setListaAceptados] = useState([]);
+  const [perroActual, setPerroActual] = useState({ name: '', image: '' });
+
+
+  useEffect(() => {
+    buscarImagenPerro();
+  }, [])
+
+  const buscarImagenPerro = () => {
+    axios.get('https://dog.ceo/api/breeds/image/random').then((response) => {
+      setPerroActual({name: dogNames.allRandom(), image: response.data.message})
+    })
+  }
+
+  const aceptarPerro = (perroActual) => {
+    setListaAceptados((listaAceptados) => [...listaAceptados, perroActual]);
+    buscarImagenPerro();
+  };
+
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <Box>
+      <Grid container spacing={1} direction="row" justifyContent="space-around" alignItems="flex-start" >
+        <Card>
+          <CardContent>
+            <img src={perroActual.image} />
+            <Typography variant="h5" component="div">
+              {perroActual.name}
+            </Typography>
+          </CardContent>
+          <Button variant="contained" onClick={() => aceptarPerro(perroActual)}>Aceptar</Button>
+        </Card>
+        <Grid item md={4} xs={4} direction="row">
+          <List>
+            {listaAceptados.map((item) => (
+              <ListItem key={item.name}>
+                <img src={item.image} />
+                <Typography variant="h5" component="div">
+                  {item.name}
+                </Typography>
+              </ListItem>
+            ))}
+          </List>
+        </Grid>
+      </Grid>
+    </Box>
   )
 }
 
