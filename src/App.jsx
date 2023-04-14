@@ -37,7 +37,7 @@ function App() {
   };
 
   const aceptarPerro = (perroActual) => {
-    setListaAceptados((listaAceptados) => [...listaAceptados, perroActual]);
+    setListaAceptados((listaAceptados) => [perroActual,...listaAceptados]);
     buscarImagenPerro();
   };
 
@@ -57,101 +57,118 @@ function App() {
 
   const rechazarPerro = (perroActual) => {
     console.log("rechazado");
-    console.log(perroActual);
-    setListaRechazados([...listaRechazados, perroActual]);
-    // randomDogs();
+    setListaRechazados([perroActual,...listaRechazados]);
     buscarImagenPerro();
   };
 
   return (
+    <Grid container spacing={2} justifyContent="center" direction="row">
+      {/* lista rechazados */}
       <Grid
-        container
-        spacing={2}
-        direction="row"
-        justifyContent="space-between"
-        alignItems="stretch"
+        item
+        xs={4}
+        direction="column"
+        sx={{ minWidth: 500, minHeight: 350 }}
       >
-        {/* lista rechazados */}
-        <Grid item xs={4}  direction="column" sx={{ }}>
-          <List rowHeight={100} cols={1} style={{}}>
-            {listaRechazados.map((item) => (
-              <ListItem>
-                <Card direction="column" key={item.name}>
-                  <CardMedia
-                    component="img"
-                    style={{
-                      width: "",
-                      height: "",
-                      objectFit: "cover",
-                    }}
-                    loading="lazy"
-                    image={item.image}
-                  />
-                  <CardContent>
-                    <Typography variant="h5" component="div">
-                      {console.log(item.name)}
-                      {item.name}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
-        <Grid item xs={4} direction="column" >
-          <Card >
-            
-              <CardMedia
-                component="img"
-                width="500px"
-                height="250px"
-                image={perroActual.image}
-                alt="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {perroActual.name}
-                </Typography>
-              </CardContent>
-            <CardActions>
-              <Button onClick={()=>rechazarPerro(perroActual)} size="small" color="primary">
-                Rechazar
-              </Button>
-              <Button onClick={()=>aceptarPerro(perroActual)} size="small" color="primary">
-                Aceptar
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid item xs={4} direction="row" style={{alignItems: "center"}} >
-          <List style={{alignItems: "center"}}>
-            {listaAceptados.map((item) => (
-              <ListItem>
-                <Card direction="column"  key={item.name}>
-                  <CardMedia
-                    component="img"
-                    style={{
-                      maxWidth: "500px",
-                      maxHeight: "250px",
-                      objectFit: "contain",
-                    }}
-                    loading="lazy"
-                    image={item.image}
-                  />
-                  <CardContent>
-                    <Typography variant="h5" component="div">
-                      {item.name}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
+        <List>
+          {listaRechazados.map((item) => (
+            <ListItem sx={{ alignItems: "center" }}>
+              <Card
+                direction="column"
+                key={item.name}
+                sx={{ width: 500, height: 350 }}
+              >
+                <CardMedia
+                  component="img"
+                  sx={{
+                    maxWidth: "500px",
+                    maxHeight: "250px",
+                    objectFit: "cover",
+                  }}
+                  loading="lazy"
+                  image={item.image}
+                />
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {item.name}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </ListItem>
+          ))}
+        </List>
       </Grid>
+      <Grid
+        item
+        xs={4}
+        direction="column"
+        sx={{ width: 500, weight: 375, marginTop: 2, justifyContent: "center" }}
+      >
+        <Card>
+          <CardMedia
+            component="img"
+            sx={{
+              maxWidth: "500px",
+              maxHeight: "250px",
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+            image={perroActual.image}
+            alt="Contemplative Reptile"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {perroActual.name}
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ justifyContent: "space-around" }}>
+            <Button
+              onClick={() => rechazarPerro(perroActual)}
+              size="small"
+              color="primary"
+            >
+            </Button>
+            <Button
+              onClick={() => aceptarPerro(perroActual)}
+              size="small"
+              color="primary"
+            >
+              Aceptar
+            </Button>
+          </CardActions>
+        </Card>
+      </Grid>
+      <Grid item xs={4} direction="row" sx={{ minWidth: 500, minHeight: 350 }}>
+        <List>
+          {listaAceptados.map((item) => (
+            <ListItem>
+              <Card
+                direction="column"
+                key={item.name}
+                sx={{ width: 500, height: 350 }}
+              >
+                <CardMedia
+                  component="img"
+                  sx={{
+                    maxWidth: "500px",
+                    maxHeight: "250px",
+                    objectFit: "cover",
+                  }}
+                  loading="lazy"
+                  image={item.image}
+                />
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {item.name}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </ListItem>
+          ))}
+        </List>
+      </Grid>
+    </Grid>
   );
-
- 
 
   return (
     <>
