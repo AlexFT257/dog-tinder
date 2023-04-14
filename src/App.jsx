@@ -22,17 +22,20 @@ function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
   const [listaAceptados, setListaAceptados] = useState([]);
   const [perroActual, setPerroActual] = useState({ name: "", image: "" });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     buscarImagenPerro();
   }, []);
 
   const buscarImagenPerro = () => {
+    setLoading(true);
     axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
       setPerroActual({
         name: dogNames.allRandom(),
         image: response.data.message,
       });
+      setLoading(false);
     });
   };
 
@@ -41,19 +44,6 @@ function App() {
     buscarImagenPerro();
   };
 
-  // const randomDogs = () => {
-  //   fetch("https://dog.ceo/api/breeds/image/random")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-
-  //       setPerroActual({ name: generateName(), image: data.message });
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   randomDogs();
-  // }, []);
 
   const rechazarPerro = (perroActual) => {
     console.log("rechazado");
@@ -72,7 +62,7 @@ function App() {
       >
         <List>
           {listaRechazados.map((item) => (
-            <ListItem sx={{ alignItems: "center" }}>
+            <ListItem sx={{ alignItems: "center" }} key={item.name}>
               <Card
                 direction="column"
                 key={item.name}
@@ -126,12 +116,14 @@ function App() {
               onClick={() => rechazarPerro(perroActual)}
               size="small"
               color="primary"
+              disabled={loading}
             >
             </Button>
             <Button
               onClick={() => aceptarPerro(perroActual)}
               size="small"
               color="primary"
+              disabled={loading}
             >
               Aceptar
             </Button>
@@ -141,7 +133,7 @@ function App() {
       <Grid item xs={4} direction="row" sx={{ minWidth: 500, minHeight: 350 }}>
         <List>
           {listaAceptados.map((item) => (
-            <ListItem>
+            <ListItem key={item.name}>
               <Card
                 direction="column"
                 key={item.name}
@@ -168,66 +160,6 @@ function App() {
         </List>
       </Grid>
     </Grid>
-  );
-
-  return (
-    <>
-      <Grid container direction="row" justifyContent={""} spacing={12}>
-        {/* lista de rechazados */}
-        <Grid item style={{ backgroundColor: "white" }} xs={3}>
-          <List>
-            {listaRechazados.map((item) => {
-              return (
-                <ListItem>
-                  <Card>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={item.foto}
-                        alt="Contemplative Reptile"
-                      />
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {item.nombre}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Grid>
-        {/* perro actual */}
-        <Grid item md={6} xs={6}>
-          <Card>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                height="140"
-                image={perroActual.foto}
-                alt="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {perroActual.nombre}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-            <CardActions>
-              <Button onClick={rechazarPerro} size="small" color="primary">
-                Rechazar
-              </Button>
-              <Button onClick={randomDogs} size="small" color="primary">
-                Aceptar
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid item md={3} xs={3}></Grid>
-      </Grid>
-    </>
   );
 }
 
