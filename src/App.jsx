@@ -16,7 +16,7 @@ import {
   ImageList,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
+import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
 import axios from "axios";
 import dogNames from "dog-names";
 
@@ -50,9 +50,9 @@ function App() {
   };
 
   return (
-    <Grid container spacing={2} justifyContent="center" direction="row">
+    <Grid container spacing={2} sx={{justifyContent:"center"}} direction="row">
       {/* header / buscador */}
-      <Grid item xs={12} sx={{}}>
+      <Grid item xs={12} sx={{ padding: 2, backgroundColor: "white" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <TextField
             sx={{ width: "50%" }}
@@ -67,11 +67,16 @@ function App() {
         item
         xs={4}
         direction="column"
-        sx={{ minWidth: 500, minHeight: 350 }}
+        sx={{ minWidth: 500, minHeight: 350, backgroundColor: "grey" }}
       >
-        <List>
+        <List sx={{
+          padding: 0,
+          margin: 0,
+          overflow: "auto",
+          scrollbarWidth: "none",
+        }}>
           {listaRechazados.map((item) => (
-            <ListItem sx={{ alignItems: "center" }}>
+            <ListItem>
               <Card
                 direction="column"
                 key={item.name}
@@ -80,11 +85,9 @@ function App() {
                 <CardMedia
                   component="img"
                   sx={{
-                    maxWidth: "500px",
                     maxHeight: "250px",
                     objectFit: "cover",
                   }}
-                  loading="lazy"
                   image={item.image}
                 />
                 <CardContent>
@@ -97,26 +100,30 @@ function App() {
           ))}
         </List>
       </Grid>
+      {/* perro actual */}
       <Grid
         item
         xs={4}
         direction="column"
-        sx={{ width: 500, weight: 375, marginTop: 2, justifyContent: "center" }}
+        sx={{ minWidth: 500, minHeight: 350, backgroundColor: "white" }}
       >
-        <Card>
+        <Card
+          sx={{
+            maxWidth: 500,
+            height: 375,
+          }}
+        >
           <CardMedia
             component="img"
             sx={{
-              maxWidth: "500px",
               maxHeight: "250px",
-              objectFit: "contain",
-              objectPosition: "center",
+              objectFit: "cover",
             }}
             image={perroActual.image}
             alt="Contemplative Reptile"
           />
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h5">
               {perroActual.name}
             </Typography>
           </CardContent>
@@ -138,8 +145,11 @@ function App() {
           </CardActions>
         </Card>
       </Grid>
-      <Grid item xs={4} direction="row" sx={{ minWidth: 500, minHeight: 350 }}>
-        <List>
+      <Grid item xs={4} direction="row" sx={{ minWidth: 500, minHeight: 350,backgroundColor:"red"}}>
+        <List sx={{
+          overflow: "auto",
+          scrollbarWidth: "none",
+        }}>
           {listaAceptados.map((item) => (
             <ListItem>
               <Card
@@ -150,11 +160,9 @@ function App() {
                 <CardMedia
                   component="img"
                   sx={{
-                    maxWidth: "500px",
                     maxHeight: "250px",
                     objectFit: "cover",
                   }}
-                  loading="lazy"
                   image={item.image}
                 />
                 <CardContent>
@@ -168,66 +176,6 @@ function App() {
         </List>
       </Grid>
     </Grid>
-  );
-
-  return (
-    <>
-      <Grid container direction="row" justifyContent={""} spacing={12}>
-        {/* lista de rechazados */}
-        <Grid item style={{ backgroundColor: "white" }} xs={3}>
-          <List>
-            {listaRechazados.map((item) => {
-              return (
-                <ListItem>
-                  <Card>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={item.foto}
-                        alt="Contemplative Reptile"
-                      />
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {item.nombre}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Grid>
-        {/* perro actual */}
-        <Grid item md={6} xs={6}>
-          <Card>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                height="140"
-                image={perroActual.foto}
-                alt="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {perroActual.nombre}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-            <CardActions>
-              <Button onClick={rechazarPerro} size="small" color="primary">
-                Rechazar
-              </Button>
-              <Button onClick={randomDogs} size="small" color="primary">
-                Aceptar
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid item md={3} xs={3}></Grid>
-      </Grid>
-    </>
   );
 }
 
