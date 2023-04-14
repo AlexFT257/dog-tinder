@@ -15,6 +15,8 @@ import {
   Button,
   ImageList,
 } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import axios from "axios";
 import dogNames from "dog-names";
 
@@ -37,32 +39,29 @@ function App() {
   };
 
   const aceptarPerro = (perroActual) => {
-    setListaAceptados((listaAceptados) => [perroActual,...listaAceptados]);
+    setListaAceptados((listaAceptados) => [perroActual, ...listaAceptados]);
     buscarImagenPerro();
   };
 
-  // const randomDogs = () => {
-  //   fetch("https://dog.ceo/api/breeds/image/random")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-
-  //       setPerroActual({ name: generateName(), image: data.message });
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   randomDogs();
-  // }, []);
-
   const rechazarPerro = (perroActual) => {
     console.log("rechazado");
-    setListaRechazados([perroActual,...listaRechazados]);
+    setListaRechazados([perroActual, ...listaRechazados]);
     buscarImagenPerro();
   };
 
   return (
     <Grid container spacing={2} justifyContent="center" direction="row">
+      {/* header / buscador */}
+      <Grid item xs={12} sx={{}}>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <TextField
+            sx={{ width: "50%" }}
+            id="outlined-basic"
+            label="Buscar"
+            variant="outlined"
+          />
+        </Box>
+      </Grid>
       {/* lista rechazados */}
       <Grid
         item
@@ -110,7 +109,7 @@ function App() {
             sx={{
               maxWidth: "500px",
               maxHeight: "250px",
-              objectFit: "cover",
+              objectFit: "contain",
               objectPosition: "center",
             }}
             image={perroActual.image}
@@ -127,13 +126,14 @@ function App() {
               size="small"
               color="primary"
             >
+              <HeartBrokenIcon />
             </Button>
             <Button
               onClick={() => aceptarPerro(perroActual)}
               size="small"
               color="primary"
             >
-              Aceptar
+              <FavoriteIcon />
             </Button>
           </CardActions>
         </Card>
