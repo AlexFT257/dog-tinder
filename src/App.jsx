@@ -32,11 +32,19 @@ function App() {
 
   const buscarImagenPerro = () => {
     setLoading(true);
-    axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
+      axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
       setPerroActual({
         name: dogNames.allRandom(),
         image: response.data.message,
-      });
+      })
+      setLoading(false);
+    }).catch((error) => {
+      setLoading(true);
+      console.log(error);
+      setPerroActual({
+        name: "PERRO SHINY",
+        image: "https://img.desmotivaciones.es/201110/gfklt.jpg"
+      })
       setLoading(false);
     });
   };
@@ -82,7 +90,7 @@ function App() {
           scrollbarWidth: 'none',
         }}>
           {listaRechazados.map((item) => (
-            <ListItem key={item.name}>
+            <ListItem key={item.image}>
               <Card
                 direction="column"
                 key={item.name}
@@ -161,7 +169,7 @@ function App() {
           scrollBehavior: 'smooth',
         }}>
           {listaAceptados.map((item) => (
-            <ListItem key={item.name}>
+            <ListItem key={item.image}>
               <Card
                 direction="column"
                 key={item.name}
