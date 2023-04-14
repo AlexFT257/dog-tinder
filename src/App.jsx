@@ -23,40 +23,63 @@ import dogNames from "dog-names";
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
   const [listaAceptados, setListaAceptados] = useState([]);
-  const [perroActual, setPerroActual] = useState({ name: "", image: "" });
+  const [listaRechaAux, setListaRechaAux] = useState([]);
+  const [listaAcepAux, setListaAcepAux] = useState([]);
+  const [perroActual, setPerroActual] = useState({ index:{} ,name: "", image: "" });
   const [loading, setLoading] = useState(false);
+  const [buscador, setBuscador] = useState("");
 
   useEffect(() => {
+    setPerroActual({
+      index: 0
+    });
     buscarImagenPerro();
   }, []);
+
+  useEffect(() => {
+    if (buscador.trim() !== "") {
+      let resultAcept = listaAceptados.filter((item) =>
+        item.name.toString().includes(buscador.toString().trim())
+      );
+      let resultRecha = listaRechazados.filter((item) =>
+        item.name.toString().includes(buscador.toString().trim())
+      );
+      setListaRechaAux(resultRecha);
+      setListaAcepAux(resultAcept);
+    }else{
+      setListaRechaAux(listaRechazados);
+      setListaAcepAux(listaAceptados);
+    }
+  }, [buscador]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setBuscador(value);
+  };
 
   const buscarImagenPerro = () => {
     setLoading(true);
       axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
       setPerroActual({
+        index: perroActual.index + 1,
         name: dogNames.allRandom(),
         image: response.data.message,
       })
+      setBuscador("");
       setLoading(false);
-    }).catch((error) => {
-      setLoading(true);
-      console.log(error);
-      setPerroActual({
-        name: "PERRO SHINY",
-        image: "https://img.desmotivaciones.es/201110/gfklt.jpg"
-      })
-      setLoading(false);
-    });
+    })
   };
 
   const aceptarPerro = (perroActual) => {
     setListaAceptados((listaAceptados) => [perroActual, ...listaAceptados]);
+    setListaAcepAux((listaAcepAux) => [perroActual, ...listaAcepAux]);
     buscarImagenPerro();
   };
 
   const rechazarPerro = (perroActual) => {
     console.log("rechazado");
     setListaRechazados([perroActual, ...listaRechazados]);
+    setListaRechaAux([perroActual, ...listaRechaAux]);
     buscarImagenPerro();
   };
 
@@ -70,6 +93,8 @@ function App() {
             id="outlined-basic"
             label="Buscar"
             variant="outlined"
+            value={buscador}
+            onChange={handleInputChange}
           />
         </Box>
       </Grid>
@@ -89,8 +114,8 @@ function App() {
           scrollBehavior: 'smooth',
           scrollbarWidth: 'none',
         }}>
-          {listaRechazados.map((item) => (
-            <ListItem key={item.image}>
+          {listaRechaAux.map((item) => (
+            <ListItem key={item.index}>
               <Card
                 direction="column"
                 key={item.name}
@@ -168,8 +193,8 @@ function App() {
           scrollbarWidth: 'none',
           scrollBehavior: 'smooth',
         }}>
-          {listaAceptados.map((item) => (
-            <ListItem key={item.image}>
+          {listaAcepAux.map((item) => (
+            <ListItem key={item.index}>
               <Card
                 direction="column"
                 key={item.name}
