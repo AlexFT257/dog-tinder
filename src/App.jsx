@@ -166,6 +166,26 @@ function App() {
     buscarImagenPerro();
   };
 
+  const tagRender = (tag) => {
+    if (typeof tag === "string") {
+      return (
+        <Chip
+          key={uniqid()}
+          label={tag}
+          sx={{
+            backgroundColor: "#f5f5f5",
+            color: "#000",
+            margin: 0.5,
+            "&:hover": {
+              backgroundColor: "#f5f5f5",
+              color: "#000",
+            },
+          }}
+        />
+      );
+    }
+  };
+
   return (
     <Grid
       container
@@ -308,16 +328,7 @@ function App() {
                   gap: 1,
                 }}
               >
-                {perroActual.tags.map((tag) => (
-                  <Chip
-                    key={uniqid()}
-                    variant="outlined"
-                    size="small"
-                    color="primary"
-                    sx={{ backgroundColor: "white" }}
-                    label={tag}
-                  />
-                ))}
+                {perroActual.tags.map((tag) => tagRender(tag))}
               </Box>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-around" }}>
