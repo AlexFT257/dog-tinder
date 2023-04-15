@@ -38,7 +38,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [buscador, setBuscador] = useState("");
 
-
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   }
@@ -85,22 +84,35 @@ function App() {
     buscarImagenPerro();
   }, []);
 
+  // use effect para filtrar los perros por nombre y tags
   useEffect(() => {
     if (buscador.trim() !== "") {
-      let resultAcept = listaAceptados.filter((item) =>
-        item.name
-          .toString()
-          .toLowerCase()
-          .includes(buscador.toString().toLowerCase().trim())
+      setListaAcepAux(
+        listaAceptados.filter(
+          (item) =>
+            item.name
+              .toString()
+              .toLowerCase()
+              .includes(buscador.toString().toLowerCase().trim()) ||
+            item.tags
+              .toString()
+              .toLowerCase()
+              .includes(buscador.toString().toLowerCase().trim())
+        )
       );
-      let resultRecha = listaRechazados.filter((item) =>
-        item.name
-          .toString()
-          .toLowerCase()
-          .includes(buscador.toString().toLowerCase().trim())
+      setListaRechaAux(
+        listaRechazados.filter(
+          (item) =>
+            item.name
+              .toString()
+              .toLowerCase()
+              .includes(buscador.toString().toLowerCase().trim()) ||
+            item.tags
+              .toString()
+              .toLowerCase()
+              .includes(buscador.toString().toLowerCase().trim())
+        )
       );
-      setListaRechaAux(resultRecha);
-      setListaAcepAux(resultAcept);
     } else {
       setListaRechaAux(listaRechazados);
       setListaAcepAux(listaAceptados);
@@ -222,7 +234,7 @@ function App() {
             label="Buscar"
             variant="outlined"
             value={buscador}
-            onChange={()=>handleInputChange}
+            onChange={handleInputChange}
           />
         </Box>
       </Grid>
@@ -232,8 +244,8 @@ function App() {
         xs={4}
         direction="column"
         sx={{
-          minWidth: 500,
-          minHeight: 350,
+          maxWidth: 500,
+          maxHeight: 350,
           maxHeight: "100vh",
           overflow: "auto",
           scrollbarWidth: "none",
@@ -248,7 +260,7 @@ function App() {
             marginBottom: "100px",
           }}
         >
-          {listaRechazados.map((item) => (
+          {listaRechaAux.map((item) => (
             <ListItem
               sx={{
                 display: "flex",
@@ -274,8 +286,20 @@ function App() {
                 <CardContent>
                   <Typography variant="h5" component="div">
                     {item.name}
+                    {/* chips de tags */}
                   </Typography>
-                  <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 1,
+                    }}
+                  >
+                    {item.tags.map((tag) => tagRender(tag))}
+                    <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
+                  </Box>
                 </CardContent>
               </Card>
             </ListItem>
@@ -288,8 +312,8 @@ function App() {
         xs={4}
         direction="column"
         sx={{
-          minWidth: 500,
-          minHeight: 350,
+          maxWidth: 500,
+          marginTop: 2,
         }}
       >
         <Box
@@ -309,7 +333,7 @@ function App() {
             <CardMedia
               component="img"
               sx={{
-                maxHeight: "250px",
+                maxHeight: 250,
                 objectFit: "cover",
               }}
               image={perroActual.image}
@@ -326,6 +350,7 @@ function App() {
                   justifyContent: "center",
                   alignItems: "center",
                   gap: 1,
+                  flexWrap: "wrap",
                 }}
               >
                 {perroActual.tags.map((tag) => tagRender(tag))}
@@ -357,11 +382,11 @@ function App() {
         xs={4}
         direction="row"
         sx={{
-          minWidth: 500,
-          minHeight: 350,
+          maxWidth: 500,
           maxHeight: "100vh",
           overflow: "auto",
           scrollbarWidth: "none",
+          transition: "all 0.5s ease",
         }}
       >
         <List
@@ -386,12 +411,12 @@ function App() {
               <Card
                 direction="column"
                 key={item.name}
-                sx={{ width: 500, height: 350 }}
+                sx={{ width: 500, maxHeight: 350 }}
               >
                 <CardMedia
                   component="img"
                   sx={{
-                    maxHeight: "250px",
+                    maxHeight: 250,
                     objectFit: "cover",
                   }}
                   image={item.image}
@@ -400,7 +425,18 @@ function App() {
                   <Typography variant="h5" component="div">
                     {item.name}
                   </Typography>
-                  <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 1,
+                    }}
+                  >
+                    {item.tags.map((tag) => tagRender(tag))}
+                    <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
+                  </Box>
                 </CardContent>
               </Card>
             </ListItem>
