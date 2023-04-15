@@ -23,29 +23,90 @@ import dogNames from "dog-names";
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
   const [listaAceptados, setListaAceptados] = useState([]);
-  const [perroActual, setPerroActual] = useState({ name: "", image: "" });
+  const [listaRechaAux, setListaRechaAux] = useState([]);
+  const [listaAcepAux, setListaAcepAux] = useState([]);
+  const [perroActual, setPerroActual] = useState({ index:{} ,name: "", image: "" });
+  const [loading, setLoading] = useState(false);
+  const [buscador, setBuscador] = useState("");
 
   useEffect(() => {
+    setPerroActual({
+      index: 0
+    });
     buscarImagenPerro();
   }, []);
 
-  const buscarImagenPerro = () => {
-    axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
-      setPerroActual({
-        name: dogNames.allRandom(),
-        image: response.data.message,
-      });
-    });
+  useEffect(() => {
+    if (buscador.trim() !== "") {
+      let resultAcept = listaAceptados.filter((item) =>
+        item.name.toString().includes(buscador.toString().trim())
+      );
+      let resultRecha = listaRechazados.filter((item) =>
+        item.name.toString().includes(buscador.toString().trim())
+      );
+      setListaRechaAux(resultRecha);
+      setListaAcepAux(resultAcept);
+    }else{
+      setListaRechaAux(listaRechazados);
+      setListaAcepAux(listaAceptados);
+    }
+  }, [buscador]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setBuscador(value);
   };
 
-  const aceptarPerro = (perroActual) => {
-    setListaAceptados((listaAceptados) => [perroActual, ...listaAceptados]);
+  const buscarImagenPerro = () => {
+    setLoading(true);
+      axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
+      setPerroActual({
+        index: perroActual.index + 1,
+        name: dogNames.allRandom(),
+        image: response.data.message,
+      })
+      setBuscador("");
+      setLoading(false);
+    })
+  };
+
+  const cambiarEstado = (item) => {
+    if(listaAceptados.includes(item)){
+      setAmbosRechazados(item);
+      eliminarAmbosAceptados(item)
+    }else if(listaRechazados.includes(item)){
+      setAmbosAceptados(item);
+      eliminarAmbosRechazados(item)
+    }
+  }
+
+  const eliminarAmbosAceptados = (item) => {
+    setListaAceptados(listaAceptados.filter((perro) => perro !== item));
+    setListaAcepAux(listaAcepAux.filter((perro) => perro !== item));
+  }
+
+  const eliminarAmbosRechazados = (item) => {
+    setListaRechazados(listaRechazados.filter((perro) => perro !== item));
+    setListaRechaAux(listaRechaAux.filter((perro) => perro !== item));
+  }
+
+  const setAmbosAceptados = (item) => {
+    setListaAceptados((listaAceptados) => [item, ...listaAceptados]);
+    setListaAcepAux((listaAcepAux) => [item, ...listaAcepAux]);
+  }
+
+  const setAmbosRechazados = (item) => {
+    setListaRechazados([item, ...listaRechazados]);
+    setListaRechaAux([item, ...listaRechaAux]);
+  }
+
+  const aceptarPerro = () => {
+    setAmbosAceptados(perroActual)
     buscarImagenPerro();
   };
 
-  const rechazarPerro = (perroActual) => {
-    console.log("rechazado");
-    setListaRechazados([perroActual, ...listaRechazados]);
+  const rechazarPerro = () => {
+    setAmbosRechazados(perroActual)
     buscarImagenPerro();
   };
 
@@ -59,6 +120,8 @@ function App() {
             id="outlined-basic"
             label="Buscar"
             variant="outlined"
+            value={buscador}
+            onChange={handleInputChange}
           />
         </Box>
       </Grid>
@@ -94,6 +157,7 @@ function App() {
                   <Typography variant="h5" component="div">
                     {item.name}
                   </Typography>
+                  <Button onClick={() => cambiarEstado(item)} >Cambiar</Button>
                 </CardContent>
               </Card>
             </ListItem>
@@ -129,16 +193,18 @@ function App() {
           </CardContent>
           <CardActions sx={{ justifyContent: "space-around" }}>
             <Button
-              onClick={() => rechazarPerro(perroActual)}
+              onClick={() => rechazarPerro()}
               size="small"
               color="primary"
+              disabled={loading}
             >
               <HeartBrokenIcon />
             </Button>
             <Button
-              onClick={() => aceptarPerro(perroActual)}
+              onClick={() => aceptarPerro()}
               size="small"
               color="primary"
+              disabled={loading}
             >
               <FavoriteIcon />
             </Button>
@@ -147,11 +213,13 @@ function App() {
       </Grid>
       <Grid item xs={4} direction="row" sx={{ minWidth: 500, minHeight: 350,backgroundColor:"red"}}>
         <List sx={{
-          overflow: "auto",
-          scrollbarWidth: "none",
+          maxHeight: '750px',
+          overflow: 'auto',
+          scrollbarWidth: 'none',
+          scrollBehavior: 'smooth',
         }}>
-          {listaAceptados.map((item) => (
-            <ListItem>
+          {listaAcepAux.map((item) => (
+            <ListItem key={item.index}>
               <Card
                 direction="column"
                 key={item.name}
@@ -169,6 +237,7 @@ function App() {
                   <Typography variant="h5" component="div">
                     {item.name}
                   </Typography>
+                  <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
                 </CardContent>
               </Card>
             </ListItem>
