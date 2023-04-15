@@ -70,16 +70,43 @@ function App() {
     })
   };
 
-  const aceptarPerro = (perroActual) => {
-    setListaAceptados((listaAceptados) => [perroActual, ...listaAceptados]);
-    setListaAcepAux((listaAcepAux) => [perroActual, ...listaAcepAux]);
+  const cambiarEstado = (item) => {
+    if(listaAceptados.includes(item)){
+      setAmbosRechazados(item);
+      eliminarAmbosAceptados(item)
+    }else if(listaRechazados.includes(item)){
+      setAmbosAceptados(item);
+      eliminarAmbosRechazados(item)
+    }
+  }
+
+  const eliminarAmbosAceptados = (item) => {
+    setListaAceptados(listaAceptados.filter((perro) => perro !== item));
+    setListaAcepAux(listaAcepAux.filter((perro) => perro !== item));
+  }
+
+  const eliminarAmbosRechazados = (item) => {
+    setListaRechazados(listaRechazados.filter((perro) => perro !== item));
+    setListaRechaAux(listaRechaAux.filter((perro) => perro !== item));
+  }
+
+  const setAmbosAceptados = (item) => {
+    setListaAceptados((listaAceptados) => [item, ...listaAceptados]);
+    setListaAcepAux((listaAcepAux) => [item, ...listaAcepAux]);
+  }
+
+  const setAmbosRechazados = (item) => {
+    setListaRechazados([item, ...listaRechazados]);
+    setListaRechaAux([item, ...listaRechaAux]);
+  }
+
+  const aceptarPerro = () => {
+    setAmbosAceptados(perroActual)
     buscarImagenPerro();
   };
 
-  const rechazarPerro = (perroActual) => {
-    console.log("rechazado");
-    setListaRechazados([perroActual, ...listaRechazados]);
-    setListaRechaAux([perroActual, ...listaRechaAux]);
+  const rechazarPerro = () => {
+    setAmbosRechazados(perroActual)
     buscarImagenPerro();
   };
 
@@ -133,6 +160,7 @@ function App() {
                   <Typography variant="h5" component="div">
                     {item.name}
                   </Typography>
+                  <Button onClick={() => cambiarEstado(item)} >Cambiar</Button>
                 </CardContent>
               </Card>
             </ListItem>
@@ -168,7 +196,7 @@ function App() {
           </CardContent>
           <CardActions sx={{ justifyContent: "space-around" }}>
             <Button
-              onClick={() => rechazarPerro(perroActual)}
+              onClick={() => rechazarPerro()}
               size="small"
               color="primary"
               disabled={loading}
@@ -176,7 +204,7 @@ function App() {
               <HeartBrokenIcon />
             </Button>
             <Button
-              onClick={() => aceptarPerro(perroActual)}
+              onClick={() => aceptarPerro()}
               size="small"
               color="primary"
               disabled={loading}
@@ -212,6 +240,7 @@ function App() {
                   <Typography variant="h5" component="div">
                     {item.name}
                   </Typography>
+                  <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
                 </CardContent>
               </Card>
             </ListItem>
