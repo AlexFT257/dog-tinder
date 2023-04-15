@@ -13,12 +13,16 @@ import {
   ListItem,
   TextField,
   Button,
+  IconButton,
+  Chip,
   ImageList,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
+import PetsIcon from "@mui/icons-material/Pets";
 import axios from "axios";
 import dogNames from "dog-names";
+import uniqid from "uniqid";
 
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
@@ -29,13 +33,54 @@ function App() {
     index: {},
     name: "",
     image: "",
+    tags: [],
   });
   const [loading, setLoading] = useState(false);
   const [buscador, setBuscador] = useState("");
 
+
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  function generateTags() {
+    // tags de prueba para el perro
+    var tags = [
+      "lindo",
+      "adorable",
+      "cariñoso",
+      "jugueton",
+      "amigable",
+      "fiel",
+      "inteligente",
+      "tranquilo",
+      "curioso",
+      "independiente",
+      "sociable",
+      "amoroso",
+      "protector",
+      "cariñoso",
+      "jugueton",
+      "fiel",
+    ];
+    // numero de tags aleatorio
+    var tagNumber = getRandomInt(1, 5);
+    // variable para guardar los tags
+    var tagsAux = [];
+    for (var i = 0; i < tagNumber; i++) {
+      tagsAux.push(tags[getRandomInt(0, tags.length + 1)]);
+    }
+    // comprobamos que no haya tags repetidos
+    // si hay repetidos, se eliminan
+    tagsAux = tagsAux.filter((item, index) => tagsAux.indexOf(item) === index);
+    // retornamos los tags
+    return tagsAux;
+  }
+
   useEffect(() => {
     setPerroActual({
       index: 0,
+      tags: generateTags(),
     });
     buscarImagenPerro();
   }, []);
@@ -74,6 +119,7 @@ function App() {
         index: perroActual.index + 1,
         name: dogNames.allRandom(),
         image: response.data.message,
+        tags: generateTags(),
       });
       setBuscador("");
       setLoading(false);
@@ -124,22 +170,39 @@ function App() {
     <Grid
       container
       spacing={2}
-      sx={{ justifyContent: "center",
-      display: "flex",
-      maxHeight: "100vh",
-      overflow: "hidden",      
-    }}
+      sx={{
+        justifyContent: "center",
+        display: "flex",
+        maxHeight: "100vh",
+        overflow: "hidden",
+      }}
     >
       {/* header / buscador */}
       <Grid item xs={12} sx={{ padding: 2, backgroundColor: "white" }}>
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="div"
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            <PetsIcon sx={{ fontSize: 40 }} />
+            Dog Tinder
+          </Typography>
+
           <TextField
             sx={{ width: "50%" }}
             id="outlined-basic"
             label="Buscar"
             variant="outlined"
             value={buscador}
-            onChange={handleInputChange}
+            onChange={()=>handleInputChange}
           />
         </Box>
       </Grid>
@@ -154,7 +217,6 @@ function App() {
           maxHeight: "100vh",
           overflow: "auto",
           scrollbarWidth: "none",
-          
         }}
       >
         <List
@@ -222,7 +284,6 @@ function App() {
           <Card
             sx={{
               width: 500,
-              height: 375,
             }}
           >
             <CardMedia
@@ -238,6 +299,26 @@ function App() {
               <Typography gutterBottom variant="h5">
                 {perroActual.name}
               </Typography>
+              {/* tags */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                {perroActual.tags.map((tag) => (
+                  <Chip
+                    key={uniqid()}
+                    variant="outlined"
+                    size="small"
+                    color="primary"
+                    sx={{ backgroundColor: "white" }}
+                    label={tag}
+                  />
+                ))}
+              </Box>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-around" }}>
               <Button
