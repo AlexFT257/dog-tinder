@@ -19,10 +19,12 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
-import PetsIcon from "@mui/icons-material/Pets";
 import axios from "axios";
 import dogNames from "dog-names";
 import uniqid from "uniqid";
+import PetsIcon from "@mui/icons-material/Pets";
+import { createTheme } from '@mui/material/styles';
+import imageLoading from './assets/loading.gif';
 
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
@@ -185,18 +187,36 @@ function App() {
           key={uniqid()}
           label={tag}
           sx={{
-            backgroundColor: "#f5f5f5",
-            color: "#000",
+            backgroundColor: "#5a3f28",
+            color: "#dca899",
             margin: 0.5,
             "&:hover": {
-              backgroundColor: "#f5f5f5",
-              color: "#000",
+              backgroundColor: "#dca899",
+              color: "#5a3f28",
             },
           }}
         />
       );
     }
   };
+
+
+  //paleta de colores:
+  //#523e27 texto
+  //#ce6857 Fondo
+  //#e8cfc1 secundario
+  //#A87008 fondo secundario
+  //#E8CFC1 texto secundario
+  //#F2BD99 texto secundario 2
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#e8cfc1',
+      }
+    },
+  });
+
 
   return (
     <Grid
@@ -210,7 +230,7 @@ function App() {
       }}
     >
       {/* header / buscador */}
-      <Grid item xs={12} sx={{ padding: 2, backgroundColor: "white" }}>
+      <Grid item xs={12} sx={{ padding: 2, backgroundColor: "#ce6857" }}>
         <Box
           sx={{
             display: "flex",
@@ -225,9 +245,8 @@ function App() {
             sx={{ display: "flex", alignItems: "center" }}
           >
             <PetsIcon sx={{ fontSize: 40 }} />
-            Dog Tinder
+            Dog Line
           </Typography>
-
           <TextField
             sx={{ width: "50%" }}
             id="outlined-basic"
@@ -245,10 +264,10 @@ function App() {
         direction="column"
         sx={{
           maxWidth: 500,
-          maxHeight: 350,
           maxHeight: "100vh",
           overflow: "auto",
           scrollbarWidth: "none",
+          backgroundColor: "#e8cfc1",
         }}
       >
         <List
@@ -261,7 +280,7 @@ function App() {
           }}
         >
           {listaRechaAux.map((item) => (
-            <ListItem
+            <ListItem key={item.index}
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -273,7 +292,7 @@ function App() {
               <Card
                 direction="column"
                 key={item.name}
-                sx={{ width: 500, height: 350 }}
+                sx={{ width: 500, height: 350, backgroundColor: "#ac4147",}}
               >
                 <CardMedia
                   component="img"
@@ -284,7 +303,7 @@ function App() {
                   image={item.image}
                 />
                 <CardContent>
-                  <Typography variant="h5" component="div">
+                  <Typography sx={{ color: "#E8CFC1"}} variant="h5" component="div">
                     {item.name}
                     {/* chips de tags */}
                   </Typography>
@@ -298,7 +317,7 @@ function App() {
                     }}
                   >
                     {item.tags.map((tag) => tagRender(tag))}
-                    <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
+                    <Button onClick={() => cambiarEstado(item)} sx={{ backgroundColor: "#79b5ac", color: "black" }} >Cambiar</Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -328,6 +347,7 @@ function App() {
           <Card
             sx={{
               width: 500,
+              backgroundColor: "#ae5c4c",
             }}
           >
             <CardMedia
@@ -336,12 +356,12 @@ function App() {
                 maxHeight: 250,
                 objectFit: "cover",
               }}
-              image={perroActual.image}
+              image={loading ? imageLoading :perroActual.image}
               alt="Contemplative Reptile"
             />
             <CardContent>
               <Typography gutterBottom variant="h5">
-                {perroActual.name}
+                {loading ? "Cargando..." : perroActual.name }
               </Typography>
               {/* tags */}
               <Box
@@ -360,8 +380,8 @@ function App() {
               <Button
                 onClick={() => rechazarPerro()}
                 size="small"
-                color="primary"
                 disabled={loading}
+                color="primary"
               >
                 <HeartBrokenIcon />
               </Button>
@@ -411,7 +431,7 @@ function App() {
               <Card
                 direction="column"
                 key={item.name}
-                sx={{ width: 500, maxHeight: 350 }}
+                sx={{ width: 500, maxHeight: 350, backgroundColor: "#79b5ac", }}
               >
                 <CardMedia
                   component="img"
@@ -422,7 +442,7 @@ function App() {
                   image={item.image}
                 />
                 <CardContent>
-                  <Typography variant="h5" component="div">
+                  <Typography variant="h5" component="div" sx={{ color: "#2BD99" }} >
                     {item.name}
                   </Typography>
                   <Box
@@ -435,7 +455,7 @@ function App() {
                     }}
                   >
                     {item.tags.map((tag) => tagRender(tag))}
-                    <Button onClick={() => cambiarEstado(item)}>Cambiar</Button>
+                    <Button onClick={() => cambiarEstado(item)} sx={{ backgroundColor: "#ac4147", color: "#e8cfc1" }} >Cambiar</Button>
                   </Box>
                 </CardContent>
               </Card>
