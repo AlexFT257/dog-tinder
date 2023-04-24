@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import axios from "axios";
+import dogNames from "dog-names";
 
 export function uuseBuscarImagenQuery(params) {
     return useQuery(
@@ -14,14 +15,15 @@ export function uuseBuscarImagenQuery(params) {
 }
 
 export const buscarImagenQuery = async (params) => {
-    const [queryName, paramsFilter] = params.queryKey;
-    let urlBase = "";
-    const { data } = await axios.get(
-        urlBase + "/pokemon?limit=" + paramsFilter.limit
-    );
+    let urlBase = "https://dog.ceo/api/breeds/image/random";
+    const { data } = await axios.get(urlBase);
 
     const resumen = data.results.map((item, index) => {
-        return { label: item.name, id: index + 1 };
+        return {
+            index:  perroActual.index + 1,
+            name: dogNames.allRandom(),
+            image: item.data.message,
+        };
     });
     return resumen;
 };
