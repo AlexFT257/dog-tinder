@@ -25,6 +25,16 @@ import uniqid from "uniqid";
 import PetsIcon from "@mui/icons-material/Pets";
 import { createTheme } from '@mui/material/styles';
 import imageLoading from './assets/loading.gif';
+import archivoFrases from './assets/frases.txt';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Tooltip from '@mui/material/Tooltip';
+
+
 
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
@@ -36,9 +46,25 @@ function App() {
     name: "",
     image: "",
     tags: [],
+    description: "",
   });
   const [loading, setLoading] = useState(false);
   const [buscador, setBuscador] = useState("");
+  const [frases, setFrases] = useState([]);
+
+  // * Frases
+
+  function leerArchivo() {
+    fetch(archivoFrases)
+      .then((respuesta) => respuesta.text())
+      .then(contenido => {
+        const lineas = contenido.split('\n');
+        setFrases(lineas);
+      });
+  }
+
+
+  // * Funciones
 
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -79,6 +105,7 @@ function App() {
   }
 
   useEffect(() => {
+    leerArchivo();
     setPerroActual({
       index: 0,
       tags: generateTags(),
@@ -134,11 +161,17 @@ function App() {
         name: dogNames.allRandom(),
         image: response.data.message,
         tags: generateTags(),
+        description: getFrase(),
       });
       setBuscador("");
       setLoading(false);
     });
   };
+
+  const getFrase = () => {
+    const temp = frases[getRandomInt(0, frases.length)];
+    return temp.replace(/\${perroActual.name}/g, perroActual.name);;
+  }
 
   const cambiarEstado = (item) => {
     if (listaAceptados.includes(item)) {
@@ -257,74 +290,6 @@ function App() {
           />
         </Box>
       </Grid>
-      {/* lista rechazados */}
-      <Grid
-        item
-        xs={4}
-        direction="column"
-        sx={{
-          maxWidth: 500,
-          maxHeight: "100vh",
-          overflow: "auto",
-          scrollbarWidth: "none",
-          backgroundColor: "#e8cfc1",
-        }}
-      >
-        <List
-          sx={{
-            overflow: "auto",
-            scrollbarWidth: "none",
-            scrollBehavior: "smooth",
-            margin: "auto",
-            marginBottom: "100px",
-          }}
-        >
-          {listaRechaAux.map((item) => (
-            <ListItem key={item.index}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: "auto",
-                width: "100%",
-              }}
-            >
-              <Card
-                direction="column"
-                key={item.name}
-                sx={{ width: 500, height: 350, backgroundColor: "#ac4147",}}
-              >
-                <CardMedia
-                  component="img"
-                  sx={{
-                    maxHeight: "250px",
-                    objectFit: "cover",
-                  }}
-                  image={item.image}
-                />
-                <CardContent>
-                  <Typography sx={{ color: "#E8CFC1"}} variant="h5" component="div">
-                    {item.name}
-                    {/* chips de tags */}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      flexWrap: "wrap",
-                      gap: 1,
-                    }}
-                  >
-                    {item.tags.map((tag) => tagRender(tag))}
-                    <Button onClick={() => cambiarEstado(item)} sx={{ backgroundColor: "#79b5ac", color: "black" }} >Cambiar</Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            </ListItem>
-          ))}
-        </List>
-      </Grid>
       {/* perro actual */}
       <Grid
         item
@@ -356,12 +321,12 @@ function App() {
                 maxHeight: 250,
                 objectFit: "cover",
               }}
-              image={loading ? imageLoading :perroActual.image}
+              image={loading ? imageLoading : perroActual.image}
               alt="Contemplative Reptile"
             />
             <CardContent>
               <Typography gutterBottom variant="h5">
-                {loading ? "Cargando..." : perroActual.name }
+                {loading ? "Cargando..." : perroActual.name}
               </Typography>
               {/* tags */}
               <Box
@@ -375,28 +340,50 @@ function App() {
               >
                 {perroActual.tags.map((tag) => tagRender(tag))}
               </Box>
+              <Typography > {loading ? "Cargando..." : perroActual.description} </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-around" }}>
-              <Button
-                onClick={() => rechazarPerro()}
-                size="small"
-                disabled={loading}
-                color="primary"
-              >
-                <HeartBrokenIcon />
-              </Button>
-              <Button
-                onClick={() => aceptarPerro()}
-                size="small"
-                color="primary"
-                disabled={loading}
-              >
-                <FavoriteIcon />
-              </Button>
+              <Tooltip title="Rechazar" >
+                <Button
+                  onClick={() => rechazarPerro()}
+                  size="small"
+                  disabled={loading}
+                  color="primary"
+                  sx={{
+                    backgroundColor: "#ac4147",
+                    color: "#e8cfc1",
+                    ":hover": {
+                      backgroundColor: "#e8cfc1",
+                      color: "#ac4147",
+                    }
+                  }}
+                >
+                  <HeartBrokenIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Aceptar" >
+                <Button
+                  onClick={() => aceptarPerro()}
+                  size="small"
+                  color="primary"
+                  disabled={loading}
+                  sx={{
+                    backgroundColor: "#79b5ac",
+                    color: "#e8cfc1",
+                    ":hover": {
+                      backgroundColor: "#e8cfc1",
+                      color: "#79b5ac",
+                    }
+                  }}
+                >
+                  <FavoriteIcon />
+                </Button>
+              </Tooltip>
             </CardActions>
           </Card>
         </Box>
       </Grid>
+      {/* Lista aceptados */}
       <Grid
         item
         xs={4}
@@ -431,7 +418,7 @@ function App() {
               <Card
                 direction="column"
                 key={item.name}
-                sx={{ width: 500, maxHeight: 350, backgroundColor: "#79b5ac", }}
+                sx={{ width: 500, backgroundColor: "#79b5ac", }}
               >
                 <CardMedia
                   component="img"
@@ -455,7 +442,49 @@ function App() {
                     }}
                   >
                     {item.tags.map((tag) => tagRender(tag))}
-                    <Button onClick={() => cambiarEstado(item)} sx={{ backgroundColor: "#ac4147", color: "#e8cfc1" }} >Cambiar</Button>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "stretch",
+                      direction: "row",
+                      gap: 1,
+                    }}
+                  >
+                    <Grid md={9}>
+                      <Accordion
+                        sx={{
+                          backgroundColor: "#e8cfc1",
+                          color: "black",
+                        }}
+                      >
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                        >
+                          <Typography>Descripción de {item.name}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Typography>
+                            {item.description}
+                          </Typography>
+                        </AccordionDetails>
+                      </Accordion>
+                    </Grid>
+                    <Grid md={3}>
+                      <Tooltip title="Cambiar a rechazados">
+                        <Button onClick={() => cambiarEstado(item)} sx={{
+                          backgroundColor: "#ac4147",
+                          color: "#e8cfc1",
+                          ":hover": {
+                            backgroundColor: "#e8cfc1",
+                            color: "#ac4147",
+                          }
+                        }} >
+                          <ArrowForwardIosIcon />
+                        </Button>
+                      </Tooltip>
+                    </Grid>
                   </Box>
                 </CardContent>
               </Card>
@@ -463,6 +492,111 @@ function App() {
           ))}
         </List>
       </Grid>
+      {/* Lista rechazados */}
+      <Grid
+        item
+        xs={4}
+        direction="column"
+        sx={{
+          maxWidth: 500,
+          maxHeight: "100vh",
+          overflow: "auto",
+          scrollbarWidth: "none",
+          backgroundColor: "#e8cfc1",
+        }}
+      >
+        <List
+          sx={{
+            overflow: "auto",
+            scrollbarWidth: "none",
+            scrollBehavior: "smooth",
+            margin: "auto",
+            marginBottom: "100px",
+          }}
+        >
+          {listaRechaAux.map((item) => (
+            <ListItem key={item.index}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "auto",
+                width: "100%",
+              }}
+            >
+              <Card
+                direction="column"
+                key={item.name}
+                sx={{ width: 500, backgroundColor: "#ac4147", }}
+              >
+                <CardMedia
+                  component="img"
+                  sx={{
+                    maxHeight: "250px",
+                    objectFit: "cover",
+                  }}
+                  image={item.image}
+                />
+                <CardContent>
+                  <Typography sx={{ color: "#E8CFC1" }} variant="h5" component="div">
+                    {item.name}
+                    {/* chips de tags */}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 1,
+                    }}
+                  >
+                    {item.tags.map((tag) => tagRender(tag))}
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "stretch",
+                      direction: "row",
+                      gap: 1,
+                    }}
+                  >
+                    <Grid item xs={3}>
+                      <Tooltip title="Cambiar a aceptados">
+                        <Button
+                          onClick={() => cambiarEstado(item)}
+                          sx={{
+                            backgroundColor: "#79b5ac",
+                            color: "#e8cfc1",
+                            ":hover": {
+                              backgroundColor: "#e8cfc1",
+                              color: "#79b5ac",
+                            },
+                          }}
+                        >
+                          <ArrowBackIosIcon />
+                        </Button>
+                      </Tooltip>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                          <Typography>Descripción de {item.name}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Typography>{item.description}</Typography>
+                        </AccordionDetails>
+                      </Accordion>
+                    </Grid>
+                  </Box>
+                </CardContent>
+              </Card>
+            </ListItem>
+          ))}
+        </List>
+      </Grid>
+
     </Grid>
   );
 }
