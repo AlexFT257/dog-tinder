@@ -14,23 +14,7 @@ export function useQueryImagenes (params) {
     );
 }
 
-<<<<<<< Updated upstream
-export const buscarImagenQuery = async (params) => {
-    let urlBase = "https://dog.ceo/api/breeds/image/random";
-    const { data } = await axios.get(urlBase);
-
-    const resumen = data.results.map((item, index) => {
-        return {
-            index:  perroActual.index + 1,
-            name: dogNames.allRandom(),
-            image: item.data.message,
-        };
-    });
-    return resumen;
-};
-=======
 export const queryImagenes = async (params) => {
     const { response } = await axios.get("https://dog.ceo/api/breeds/image/random");
     return { imagen: response.message , nombre: "Te odio react query" };
 }
->>>>>>> Stashed changes
