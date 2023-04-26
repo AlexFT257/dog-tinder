@@ -34,6 +34,8 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryImagenes } from "./Queries/queryImagenes";
+import CircularProgress from '@mui/material/CircularProgress';
+import { margin } from "@mui/system";
 
 
 function App() {
@@ -155,7 +157,7 @@ function App() {
 
   const {
     data: imgPerro,
-    isLoading: loading,
+    isFetching: loading,
     isError: error,
     isSuccess: success,
   } = useQueryImagenes(params);
@@ -332,62 +334,65 @@ function App() {
                 image={loading ? imageLoading : perroActual.image}
                 alt="Contemplative Reptile"
               />
-              <CardContent>
-                <Typography gutterBottom variant="h5">
-                  {loading ? "Cargando..." : perroActual.name}
-                </Typography>
-                {/* tags */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: 1,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {perroActual.tags.map((tag) => tagRender(tag))}
-                </Box>
-                <Typography > {loading ? "Cargando..." : perroActual.description} </Typography>
-              </CardContent>
-              <CardActions sx={{ justifyContent: "space-around" }}>
-                <Tooltip title="Rechazar" >
-                  <Button
-                    onClick={() => rechazarPerro()}
-                    size="small"
-                    disabled={loading}
-                    color="primary"
+              {loading ? (
+                <CircularProgress sx={{margin: 7}}/>
+              ) : (
+                <><CardContent>
+
+                  <Typography gutterBottom variant="h5">{perroActual.name}</Typography>
+
+                  {/* tags */}
+                  <Box
                     sx={{
-                      backgroundColor: "#ac4147",
-                      color: "#e8cfc1",
-                      ":hover": {
-                        backgroundColor: "#e8cfc1",
-                        color: "#ac4147",
-                      }
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 1,
+                      flexWrap: "wrap",
                     }}
                   >
-                    <HeartBrokenIcon />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Aceptar" >
-                  <Button
-                    onClick={() => aceptarPerro()}
-                    size="small"
-                    color="primary"
-                    disabled={loading}
-                    sx={{
-                      backgroundColor: "#79b5ac",
-                      color: "#e8cfc1",
-                      ":hover": {
-                        backgroundColor: "#e8cfc1",
-                        color: "#79b5ac",
-                      }
-                    }}
-                  >
-                    <FavoriteIcon />
-                  </Button>
-                </Tooltip>
-              </CardActions>
+                    {perroActual.tags.map((tag) => tagRender(tag))}
+                  </Box>
+                  <Typography>{perroActual.description}</Typography>
+                </CardContent><CardActions sx={{ justifyContent: "space-around" }}>
+                    <Tooltip title="Rechazar">
+                      <Button
+                        onClick={() => rechazarPerro()}
+                        size="small"
+                        disabled={loading}
+                        color="primary"
+                        sx={{
+                          backgroundColor: "#ac4147",
+                          color: "#e8cfc1",
+                          ":hover": {
+                            backgroundColor: "#e8cfc1",
+                            color: "#ac4147",
+                          }
+                        }}
+                      >
+                        <HeartBrokenIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Aceptar">
+                      <Button
+                        onClick={() => aceptarPerro()}
+                        size="small"
+                        color="primary"
+                        disabled={loading}
+                        sx={{
+                          backgroundColor: "#79b5ac",
+                          color: "#e8cfc1",
+                          ":hover": {
+                            backgroundColor: "#e8cfc1",
+                            color: "#79b5ac",
+                          }
+                        }}
+                      >
+                        <FavoriteIcon />
+                      </Button>
+                    </Tooltip>
+                  </CardActions></>
+              )}
             </Card>
           </Box>
         </Grid>
