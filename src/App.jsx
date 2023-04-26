@@ -23,18 +23,16 @@ import axios from "axios";
 import dogNames from "dog-names";
 import uniqid from "uniqid";
 import PetsIcon from "@mui/icons-material/Pets";
-import { createTheme } from '@mui/material/styles';
-import imageLoading from './assets/loading.gif';
-import archivoFrases from './assets/frases.txt';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Tooltip from '@mui/material/Tooltip';
-
-
+import { createTheme } from "@mui/material/styles";
+import imageLoading from "./assets/loading.gif";
+import archivoFrases from "./assets/frases.txt";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Tooltip from "@mui/material/Tooltip";
 
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
@@ -57,12 +55,11 @@ function App() {
   function leerArchivo() {
     fetch(archivoFrases)
       .then((respuesta) => respuesta.text())
-      .then(contenido => {
-        const lineas = contenido.split('\n');
+      .then((contenido) => {
+        const lineas = contenido.split("\n");
         setFrases(lineas);
       });
   }
-
 
   // * Funciones
 
@@ -153,25 +150,34 @@ function App() {
     setBuscador(value);
   };
 
+  const {
+    data: imgPerro,
+    isLoading: loading,
+    isError: error,
+    isSuccess: success,
+  } = useQueryImagenes(params);
+
+  const respone = useQueryImagenes(params);
+
+  console.log("respone", respone);
+
+  console.log("rq", imgPerro?.message);
+
   const buscarImagenPerro = () => {
-    setLoading(true);
-    axios.get("https://dog.ceo/api/breeds/image/random").then((response) => {
-      setPerroActual({
-        index: perroActual.index + 1,
-        name: dogNames.allRandom(),
-        image: response.data.message,
-        tags: generateTags(),
-        description: getFrase(),
-      });
-      setBuscador("");
-      setLoading(false);
+    setPerroActual({
+      index: perroActual.index + 1,
+      name: dogNames.allRandom(),
+      image: imgPerro?.message,
+      tags: generateTags(),
+      description: getFrase(),
     });
+    setBuscador("");
   };
 
   const getFrase = () => {
     const temp = frases[getRandomInt(0, frases.length)];
-    return temp.replace(/\${perroActual.name}/g, perroActual.name);;
-  }
+    return temp.replace(/\${perroActual.name}/g, perroActual.name);
+  };
 
   const cambiarEstado = (item) => {
     if (listaAceptados.includes(item)) {
@@ -233,7 +239,6 @@ function App() {
     }
   };
 
-
   //paleta de colores:
   //#523e27 texto
   //#ce6857 Fondo
@@ -245,11 +250,10 @@ function App() {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#e8cfc1',
-      }
+        main: "#e8cfc1",
+      },
     },
   });
-
 
   return (
     <Grid
@@ -340,10 +344,13 @@ function App() {
               >
                 {perroActual.tags.map((tag) => tagRender(tag))}
               </Box>
-              <Typography > {loading ? "Cargando..." : perroActual.description} </Typography>
+              <Typography>
+                {" "}
+                {loading ? "Cargando..." : perroActual.description}{" "}
+              </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-around" }}>
-              <Tooltip title="Rechazar" >
+              <Tooltip title="Rechazar">
                 <Button
                   onClick={() => rechazarPerro()}
                   size="small"
@@ -355,13 +362,13 @@ function App() {
                     ":hover": {
                       backgroundColor: "#e8cfc1",
                       color: "#ac4147",
-                    }
+                    },
                   }}
                 >
                   <HeartBrokenIcon />
                 </Button>
               </Tooltip>
-              <Tooltip title="Aceptar" >
+              <Tooltip title="Aceptar">
                 <Button
                   onClick={() => aceptarPerro()}
                   size="small"
@@ -373,7 +380,7 @@ function App() {
                     ":hover": {
                       backgroundColor: "#e8cfc1",
                       color: "#79b5ac",
-                    }
+                    },
                   }}
                 >
                   <FavoriteIcon />
@@ -418,7 +425,7 @@ function App() {
               <Card
                 direction="column"
                 key={item.name}
-                sx={{ width: 500, backgroundColor: "#79b5ac", }}
+                sx={{ width: 500, backgroundColor: "#79b5ac" }}
               >
                 <CardMedia
                   component="img"
@@ -429,7 +436,11 @@ function App() {
                   image={item.image}
                 />
                 <CardContent>
-                  <Typography variant="h5" component="div" sx={{ color: "#2BD99" }} >
+                  <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{ color: "#2BD99" }}
+                  >
                     {item.name}
                   </Typography>
                   <Box
@@ -459,28 +470,27 @@ function App() {
                           color: "black",
                         }}
                       >
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                        >
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                           <Typography>Descripción de {item.name}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                          <Typography>
-                            {item.description}
-                          </Typography>
+                          <Typography>{item.description}</Typography>
                         </AccordionDetails>
                       </Accordion>
                     </Grid>
                     <Grid md={3}>
                       <Tooltip title="Cambiar a rechazados">
-                        <Button onClick={() => cambiarEstado(item)} sx={{
-                          backgroundColor: "#ac4147",
-                          color: "#e8cfc1",
-                          ":hover": {
-                            backgroundColor: "#e8cfc1",
-                            color: "#ac4147",
-                          }
-                        }} >
+                        <Button
+                          onClick={() => cambiarEstado(item)}
+                          sx={{
+                            backgroundColor: "#ac4147",
+                            color: "#e8cfc1",
+                            ":hover": {
+                              backgroundColor: "#e8cfc1",
+                              color: "#ac4147",
+                            },
+                          }}
+                        >
                           <ArrowForwardIosIcon />
                         </Button>
                       </Tooltip>
@@ -515,7 +525,8 @@ function App() {
           }}
         >
           {listaRechaAux.map((item) => (
-            <ListItem key={item.index}
+            <ListItem
+              key={item.index}
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -527,7 +538,7 @@ function App() {
               <Card
                 direction="column"
                 key={item.name}
-                sx={{ width: 500, backgroundColor: "#ac4147", }}
+                sx={{ width: 500, backgroundColor: "#ac4147" }}
               >
                 <CardMedia
                   component="img"
@@ -538,7 +549,11 @@ function App() {
                   image={item.image}
                 />
                 <CardContent>
-                  <Typography sx={{ color: "#E8CFC1" }} variant="h5" component="div">
+                  <Typography
+                    sx={{ color: "#E8CFC1" }}
+                    variant="h5"
+                    component="div"
+                  >
                     {item.name}
                     {/* chips de tags */}
                   </Typography>
@@ -580,7 +595,9 @@ function App() {
                       </Tooltip>
                     </Grid>
                     <Grid item xs={9}>
-                      <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
+                      <Accordion
+                        sx={{ backgroundColor: "#e8cfc1", color: "black" }}
+                      >
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                           <Typography>Descripción de {item.name}</Typography>
                         </AccordionSummary>
@@ -596,7 +613,6 @@ function App() {
           ))}
         </List>
       </Grid>
-
     </Grid>
   );
 }
