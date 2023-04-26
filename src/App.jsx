@@ -305,9 +305,9 @@ function App() {
         {/* perro actual */}
         <Grid
           item
-          xs={8}
+          xs={4}
           md={4}
-          direction="column"
+          direction="row"
           sx={{
             maxWidth: 500,
             marginTop: 2,
@@ -334,6 +334,7 @@ function App() {
                 sx={{
                   maxHeight: 250,
                   objectFit: "cover",
+                  objectPosition: "center",
                 }}
                 image={loading ? imageLoading : perroActual.image}
                 alt="Contemplative Reptile"
@@ -470,7 +471,7 @@ function App() {
                         gap: 1,
                       }}
                     >
-                      <Grid md={9}>
+                      <Grid xs={8} md={9}>
                         <Accordion
                           sx={{
                             backgroundColor: "#e8cfc1",
@@ -489,7 +490,7 @@ function App() {
                           </AccordionDetails>
                         </Accordion>
                       </Grid>
-                      <Grid md={3} sx={{ display: "flex", justifyContent: "end"}} >
+                      <Grid md={3} xs={1} sx={{ display: "flex", justifyContent: "end"}} >
                         <Tooltip title="Cambiar a rechazados">
                           <Button onClick={() => cambiarEstado(item)} sx={{
                             backgroundColor: "#ac4147",
@@ -581,7 +582,7 @@ function App() {
                         gap: 1,
                       }}
                     >
-                      <Grid item xs={3} sx={{ display: "flex", justifyContent: "start"}}>
+                      <Grid item xs={3} md sx={{ display: "flex", justifyContent: "start"}}>
                         <Tooltip title="Cambiar a aceptados" sx={{}}>
                           <Button
                             onClick={() => cambiarEstado(item)}
@@ -598,7 +599,7 @@ function App() {
                           </Button>
                         </Tooltip>
                       </Grid>
-                      <Grid item xs={9} sx={{ display: "flex", justifyContent: "end"}}>
+                      <Grid item xs={8} md={9} >
                         <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
                           <AccordionSummary expandIcon={<ExpandMoreIcon />} >
                             <Typography>Descripción</Typography>
