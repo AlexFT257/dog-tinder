@@ -268,7 +268,9 @@ function App() {
         sx={{
           justifyContent: "center",
           display: "flex",
+          margin: 0,
           maxHeight: "100vh",
+          maxWidth: "100vw",
           overflow: "hidden",
         }}
       >
@@ -303,11 +305,13 @@ function App() {
         {/* perro actual */}
         <Grid
           item
-          xs={4}
+          xs={8}
+          md={4}
           direction="column"
           sx={{
             maxWidth: 500,
             marginTop: 2,
+            marginBottom: 2,
           }}
         >
           <Box
@@ -399,7 +403,8 @@ function App() {
         {/* Lista aceptados */}
         <Grid
           item
-          xs={4}
+          xs={6}
+          md={4}
           direction="row"
           sx={{
             maxWidth: 500,
@@ -475,7 +480,7 @@ function App() {
                           <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                           >
-                            <Typography>Descripción de {item.name}</Typography>
+                            <Typography>Descripción</Typography>
                           </AccordionSummary>
                           <AccordionDetails>
                             <Typography>
@@ -484,7 +489,7 @@ function App() {
                           </AccordionDetails>
                         </Accordion>
                       </Grid>
-                      <Grid md={3}>
+                      <Grid md={3} sx={{ display: "flex", justifyContent: "end"}} >
                         <Tooltip title="Cambiar a rechazados">
                           <Button onClick={() => cambiarEstado(item)} sx={{
                             backgroundColor: "#ac4147",
@@ -508,7 +513,8 @@ function App() {
         {/* Lista rechazados */}
         <Grid
           item
-          xs={4}
+          xs={6}
+          md={4}
           direction="column"
           sx={{
             maxWidth: 500,
@@ -575,8 +581,8 @@ function App() {
                         gap: 1,
                       }}
                     >
-                      <Grid item xs={3}>
-                        <Tooltip title="Cambiar a aceptados">
+                      <Grid item xs={3} sx={{ display: "flex", justifyContent: "start"}}>
+                        <Tooltip title="Cambiar a aceptados" sx={{}}>
                           <Button
                             onClick={() => cambiarEstado(item)}
                             sx={{
@@ -592,10 +598,10 @@ function App() {
                           </Button>
                         </Tooltip>
                       </Grid>
-                      <Grid item xs={9}>
+                      <Grid item xs={9} sx={{ display: "flex", justifyContent: "end"}}>
                         <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
-                          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography>Descripción de {item.name}</Typography>
+                          <AccordionSummary expandIcon={<ExpandMoreIcon />} >
+                            <Typography>Descripción</Typography>
                           </AccordionSummary>
                           <AccordionDetails>
                             <Typography>{item.description}</Typography>
