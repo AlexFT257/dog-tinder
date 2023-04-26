@@ -3,7 +3,7 @@ import axios from "axios";
 import dogNames from "dog-names";
 
 
-export  function useQueryImagenes (params) {
+export   function useQueryImagenes (params) {
     return useQuery(["queryImagenes", params], queryImagenes, {
         retry: 0,
         refetchOnWindowFocus: false,

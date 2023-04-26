@@ -162,7 +162,7 @@ function App() {
 
   const respone = useQueryImagenes(params);
 
-  console.log("respone", respone);
+  console.log("respone", respone?.data?.message);
 
   console.log("rq", imgPerro?.message);
 
@@ -179,6 +179,7 @@ function App() {
 
   const getFrase = () => {
     const temp = frases[getRandomInt(0, frases.length)];
+    if (temp === undefined) return ""
     return temp.replace(/\${perroActual.name}/g, perroActual.name);
   };
 
