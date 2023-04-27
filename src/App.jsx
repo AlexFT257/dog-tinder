@@ -34,6 +34,8 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryImagenes } from "./Queries/queryImagenes";
+import CircularProgress from '@mui/material/CircularProgress';
+import { margin } from "@mui/system";
 
 
 function App() {
@@ -58,12 +60,11 @@ function App() {
   function leerArchivo() {
     fetch(archivoFrases)
       .then((respuesta) => respuesta.text())
-      .then(contenido => {
-        const lineas = contenido.split('\n');
+      .then((contenido) => {
+        const lineas = contenido.split("\n");
         setFrases(lineas);
       });
   }
-
 
   // * Funciones
 
@@ -154,23 +155,24 @@ function App() {
     setBuscador(value);
   };
 
-  // * Funciones de react query
-
   const {
     data: imgPerro,
-    isLoading: loading,
+    isFetching: loading,
     isError: error,
-    refetch: recargar,
+    isSuccess: success,
   } = useQueryImagenes(params);
 
-  console.log("rq", imgPerro.nombre);
+  const respone = useQueryImagenes(params);
 
+  console.log("respone", respone?.data?.message);
+
+  console.log("rq", imgPerro?.message);
 
   const buscarImagenPerro = () => {
     setPerroActual({
       index: perroActual.index + 1,
       name: dogNames.allRandom(),
-      image: imgPerro,
+      image: imgPerro?.message,
       tags: generateTags(),
       description: getFrase(),
     });
@@ -179,8 +181,9 @@ function App() {
 
   const getFrase = () => {
     const temp = frases[getRandomInt(0, frases.length)];
-    return temp.replace(/\${perroActual.name}/g, perroActual.name);;
-  }
+    if (temp === undefined) return ""
+    return temp.replace(/\${perroActual.name}/g, perroActual.name);
+  };
 
   const cambiarEstado = (item) => {
     if (listaAceptados.includes(item)) {
@@ -242,7 +245,6 @@ function App() {
     }
   };
 
-
   //paleta de colores:
   //#523e27 texto
   //#ce6857 Fondo
@@ -254,11 +256,10 @@ function App() {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#e8cfc1',
-      }
+        main: "#e8cfc1",
+      },
     },
   });
-
 
   return (
       <Grid
@@ -267,7 +268,9 @@ function App() {
         sx={{
           justifyContent: "center",
           display: "flex",
+          margin: 0,
           maxHeight: "100vh",
+          maxWidth: "100vw",
           overflow: "hidden",
         }}
       >
@@ -303,10 +306,12 @@ function App() {
         <Grid
           item
           xs={4}
-          direction="column"
+          md={4}
+          direction="row"
           sx={{
             maxWidth: 500,
             marginTop: 2,
+            marginBottom: 2,
           }}
         >
           <Box
@@ -329,73 +334,78 @@ function App() {
                 sx={{
                   maxHeight: 250,
                   objectFit: "cover",
+                  objectPosition: "center",
                 }}
                 image={loading ? imageLoading : perroActual.image}
                 alt="Contemplative Reptile"
               />
-              <CardContent>
-                <Typography gutterBottom variant="h5">
-                  {loading ? "Cargando..." : perroActual.name}
-                </Typography>
-                {/* tags */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: 1,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {perroActual.tags.map((tag) => tagRender(tag))}
-                </Box>
-                <Typography > {loading ? "Cargando..." : perroActual.description} </Typography>
-              </CardContent>
-              <CardActions sx={{ justifyContent: "space-around" }}>
-                <Tooltip title="Rechazar" >
-                  <Button
-                    onClick={() => rechazarPerro()}
-                    size="small"
-                    disabled={loading}
-                    color="primary"
+              {loading ? (
+                <CircularProgress sx={{margin: 7}}/>
+              ) : (
+                <><CardContent>
+
+                  <Typography gutterBottom variant="h5">{perroActual.name}</Typography>
+
+                  {/* tags */}
+                  <Box
                     sx={{
-                      backgroundColor: "#ac4147",
-                      color: "#e8cfc1",
-                      ":hover": {
-                        backgroundColor: "#e8cfc1",
-                        color: "#ac4147",
-                      }
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 1,
+                      flexWrap: "wrap",
                     }}
                   >
-                    <HeartBrokenIcon />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Aceptar" >
-                  <Button
-                    onClick={() => aceptarPerro()}
-                    size="small"
-                    color="primary"
-                    disabled={loading}
-                    sx={{
-                      backgroundColor: "#79b5ac",
-                      color: "#e8cfc1",
-                      ":hover": {
-                        backgroundColor: "#e8cfc1",
-                        color: "#79b5ac",
-                      }
-                    }}
-                  >
-                    <FavoriteIcon />
-                  </Button>
-                </Tooltip>
-              </CardActions>
+                    {perroActual.tags.map((tag) => tagRender(tag))}
+                  </Box>
+                  <Typography>{perroActual.description}</Typography>
+                </CardContent><CardActions sx={{ justifyContent: "space-around" }}>
+                    <Tooltip title="Rechazar">
+                      <Button
+                        onClick={() => rechazarPerro()}
+                        size="small"
+                        disabled={loading}
+                        color="primary"
+                        sx={{
+                          backgroundColor: "#ac4147",
+                          color: "#e8cfc1",
+                          ":hover": {
+                            backgroundColor: "#e8cfc1",
+                            color: "#ac4147",
+                          }
+                        }}
+                      >
+                        <HeartBrokenIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Aceptar">
+                      <Button
+                        onClick={() => aceptarPerro()}
+                        size="small"
+                        color="primary"
+                        disabled={loading}
+                        sx={{
+                          backgroundColor: "#79b5ac",
+                          color: "#e8cfc1",
+                          ":hover": {
+                            backgroundColor: "#e8cfc1",
+                            color: "#79b5ac",
+                          }
+                        }}
+                      >
+                        <FavoriteIcon />
+                      </Button>
+                    </Tooltip>
+                  </CardActions></>
+              )}
             </Card>
           </Box>
         </Grid>
         {/* Lista aceptados */}
         <Grid
           item
-          xs={4}
+          xs={6}
+          md={4}
           direction="row"
           sx={{
             maxWidth: 500,
@@ -461,7 +471,7 @@ function App() {
                         gap: 1,
                       }}
                     >
-                      <Grid md={9}>
+                      <Grid xs={8} md={9}>
                         <Accordion
                           sx={{
                             backgroundColor: "#e8cfc1",
@@ -471,7 +481,7 @@ function App() {
                           <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                           >
-                            <Typography>Descripción de {item.name}</Typography>
+                            <Typography>Descripción</Typography>
                           </AccordionSummary>
                           <AccordionDetails>
                             <Typography>
@@ -480,7 +490,7 @@ function App() {
                           </AccordionDetails>
                         </Accordion>
                       </Grid>
-                      <Grid md={3}>
+                      <Grid md={3} xs={1} sx={{ display: "flex", justifyContent: "end"}} >
                         <Tooltip title="Cambiar a rechazados">
                           <Button onClick={() => cambiarEstado(item)} sx={{
                             backgroundColor: "#ac4147",
@@ -504,7 +514,8 @@ function App() {
         {/* Lista rechazados */}
         <Grid
           item
-          xs={4}
+          xs={6}
+          md={4}
           direction="column"
           sx={{
             maxWidth: 500,
@@ -571,8 +582,8 @@ function App() {
                         gap: 1,
                       }}
                     >
-                      <Grid item xs={3}>
-                        <Tooltip title="Cambiar a aceptados">
+                      <Grid item xs={3} md sx={{ display: "flex", justifyContent: "start"}}>
+                        <Tooltip title="Cambiar a aceptados" sx={{}}>
                           <Button
                             onClick={() => cambiarEstado(item)}
                             sx={{
@@ -588,10 +599,10 @@ function App() {
                           </Button>
                         </Tooltip>
                       </Grid>
-                      <Grid item xs={9}>
+                      <Grid item xs={8} md={9} >
                         <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
-                          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography>Descripción de {item.name}</Typography>
+                          <AccordionSummary expandIcon={<ExpandMoreIcon />} >
+                            <Typography>Descripción</Typography>
                           </AccordionSummary>
                           <AccordionDetails>
                             <Typography>{item.description}</Typography>

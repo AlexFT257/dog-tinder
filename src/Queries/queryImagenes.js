@@ -3,7 +3,7 @@ import axios from "axios";
 import dogNames from "dog-names";
 
 
-export function useQueryImagenes (params) {
+export   function useQueryImagenes (params) {
     return useQuery(["queryImagenes", params], queryImagenes, {
         retry: 0,
         refetchOnWindowFocus: false,
@@ -14,7 +14,12 @@ export function useQueryImagenes (params) {
     );
 }
 
-export const queryImagenes = async (params) => {
-    const { response } = await axios.get("https://dog.ceo/api/breeds/image/random");
-    return { imagen: response.message , nombre: "Te odio react query" };
+async function queryImagenes  (params) {
+     return  await fetch("https://dog.ceo/api/breeds/image/random").then((response) => {
+        return response.json();
+    }).then((data) => {
+        console.log("data",data);
+        return data;
+
+    });
 }
