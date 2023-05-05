@@ -29,7 +29,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useQueryImagenes } from "./Queries/queryImagenes";
 import CircularProgress from '@mui/material/CircularProgress';
 import { DisplaySettings } from "@mui/icons-material";
-
+import { useMediaQuery } from '@mui/material';
 
 function App() {
   const [listaRechazados, setListaRechazados] = useState([]);
@@ -37,7 +37,7 @@ function App() {
   const [listaRechaAux, setListaRechaAux] = useState([]);
   const [listaAcepAux, setListaAcepAux] = useState([]);
   const [buscador, setBuscador] = useState("");
-
+  const isXsScreen = useMediaQuery('(max-width:600px)');//para saber si la pantalla es pequeña
   // use effect para filtrar los perros por nombre y tags
   useEffect(() => {
     if (buscador.trim() !== "") {
@@ -159,7 +159,7 @@ function App() {
         margin: 0,
         maxHeight: "100vh",
         maxWidth: "100vw",
-        overflow: "hidden",
+        overflow: "auto",
       }}
     >
       {/* header / buscador */}
@@ -355,42 +355,43 @@ function App() {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "stretch",
-                      direction: "row",
+                      flexDirection: isXsScreen ? "column" : "row" ,
                       gap: 1,
                     }}
                   >
-                    <Grid xs={8} md={9}>
+                    <Grid xs={12} md={9}>
                       <Accordion
                         sx={{
                           backgroundColor: "#e8cfc1",
                           color: "black",
                         }}
                       >
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                        >
-                          <Typography>Descripción</Typography>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                          <Typography sx={{ overflowWrap: "break-spaces" }} >Descripción</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                          <Typography>
-                            {item.description}
-                          </Typography>
+                          <Typography>{item.description}</Typography>
                         </AccordionDetails>
                       </Accordion>
                     </Grid>
-                    <Grid md={3} xs={1} sx={{ display: "flex", justifyContent: "end" }} >
-                      <Tooltip title="Cambiar a rechazados">
-                        <Button onClick={() => cambiarEstado(item)} sx={{
-                          backgroundColor: "#ac4147",
-                          color: "#e8cfc1",
-                          ":hover": {
-                            backgroundColor: "#e8cfc1",
-                            color: "#ac4147",
-                          }
-                        }} >
-                          <ArrowForwardIosIcon />
-                        </Button>
-                      </Tooltip>
+                    <Grid xs={12} md={3} sx={{ display: "flex", justifyContent: "end" }}>
+                      <Box sx={{ marginTop: "auto" }}>
+                        <Tooltip title="Cambiar a rechazados">
+                          <Button
+                            onClick={() => cambiarEstado(item)}
+                            sx={{
+                              backgroundColor: "#ac4147",
+                              color: "#e8cfc1",
+                              ":hover": {
+                                backgroundColor: "#e8cfc1",
+                                color: "#ac4147",
+                              },
+                            }}
+                          >
+                            <ArrowForwardIosIcon />
+                          </Button>
+                        </Tooltip>
+                      </Box>
                     </Grid>
                   </Box>
                 </CardContent>
@@ -466,36 +467,43 @@ function App() {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "stretch",
-                      direction: "row",
+                      flexDirection: isXsScreen ? "column" : "row" ,
                       gap: 1,
                     }}
                   >
-                    <Grid item xs={3} md sx={{ display: "flex", justifyContent: "start" }}>
-                      <Tooltip title="Cambiar a aceptados" sx={{}}>
-                        <Button
-                          onClick={() => cambiarEstado(item)}
-                          sx={{
-                            backgroundColor: "#79b5ac",
-                            color: "#e8cfc1",
-                            ":hover": {
-                              backgroundColor: "#e8cfc1",
-                              color: "#79b5ac",
-                            },
-                          }}
-                        >
-                          <ArrowBackIosIcon />
-                        </Button>
-                      </Tooltip>
-                    </Grid>
-                    <Grid item xs={8} md={9} >
-                      <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />} >
-                          <Typography  >Descripción</Typography>
+                    <Grid xs={12} md={9}>
+                      <Accordion
+                        sx={{
+                          backgroundColor: "#e8cfc1",
+                          color: "black",
+                        }}
+                      >
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                          <Typography>Descripción</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                           <Typography>{item.description}</Typography>
                         </AccordionDetails>
                       </Accordion>
+                    </Grid>
+                    <Grid xs={12} md={3} sx={{ display: "flex", justifyContent: "end" }}>
+                      <Box sx={{ marginTop: "auto" }}>
+                        <Tooltip title="Cambiar a rechazados">
+                          <Button
+                            onClick={() => cambiarEstado(item)}
+                            sx={{
+                              backgroundColor: "#79b5ac",
+                              color: "#e8cfc1",
+                              ":hover": {
+                                backgroundColor: "#e8cfc1",
+                                color: "#79b5ac",
+                              },
+                            }}
+                          >
+                            <ArrowForwardIosIcon />
+                          </Button>
+                        </Tooltip>
+                      </Box>
                     </Grid>
                   </Box>
                 </CardContent>
