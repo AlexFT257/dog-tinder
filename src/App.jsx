@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import {
   Box,
@@ -6,26 +6,19 @@ import {
   Card,
   CardContent,
   CardMedia,
-  CardActionArea,
   CardActions,
   Typography,
   List,
   ListItem,
   TextField,
   Button,
-  IconButton,
   Chip,
-  ImageList,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
-import axios from "axios";
-import dogNames from "dog-names";
-import uniqid from "uniqid";
 import PetsIcon from "@mui/icons-material/Pets";
-import { createTheme } from '@mui/material/styles';
 import imageLoading from './assets/loading.gif';
-import archivoFrases from './assets/frases.txt';
+import uniqid from "uniqid";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Accordion from '@mui/material/Accordion';
@@ -35,8 +28,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Tooltip from '@mui/material/Tooltip';
 import { useQueryImagenes } from "./Queries/queryImagenes";
 import CircularProgress from '@mui/material/CircularProgress';
-import { margin } from "@mui/system";
-import { QueryClient } from "react-query";
+import { DisplaySettings } from "@mui/icons-material";
 
 
 function App() {
@@ -44,118 +36,7 @@ function App() {
   const [listaAceptados, setListaAceptados] = useState([]);
   const [listaRechaAux, setListaRechaAux] = useState([]);
   const [listaAcepAux, setListaAcepAux] = useState([]);
-  const [perroActual, setPerroActual] = useState({
-    index: "",
-    name: "",
-    image: "",
-    tags: [],
-    description: "",
-  });
   const [buscador, setBuscador] = useState("");
-  const [frases, setFrases] = useState([]);
-  const [params, setParams] = useState({});
-
-
-  function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  function generateTags() {
-    // tags de prueba para el perro
-    var tags = [
-      "lindo",
-      "adorable",
-      "cariñoso",
-      "jugueton",
-      "amigable",
-      "fiel",
-      "inteligente",
-      "tranquilo",
-      "curioso",
-      "independiente",
-      "sociable",
-      "amoroso",
-      "protector",
-      "cariñoso",
-      "jugueton",
-      "fiel",
-    ];
-    // numero de tags aleatorio
-    var tagNumber = getRandomInt(1, 5);
-    // variable para guardar los tags
-    var tagsAux = [];
-    for (var i = 0; i < tagNumber; i++) {
-      tagsAux.push(tags[getRandomInt(0, tags.length + 1)]);
-    }
-    // comprobamos que no haya tags repetidos
-    // si hay repetidos, se eliminan
-    tagsAux = tagsAux.filter((item, index) => tagsAux.indexOf(item) === index);
-    // retornamos los tags
-    return tagsAux;
-  }
-
-  async function leerArchivo() {
-    await fetch(archivoFrases)
-      .then((respuesta) => respuesta.text())
-      .then((contenido) => {
-        const lineas = contenido.split("\n");
-        setFrases(lineas);
-      });
-  }
-
-  const getFrase = () => {
-    const temp = frases[getRandomInt(0, frases.length)];
-    if (temp === undefined) return ""
-    return temp.replace(/\${perroActual.name}/g, perroActual.name);
-  };
-
-
-  const {
-    data: imgPerro,
-    isFetching: loading,
-    isError: error,
-    isSuccess: success,
-    refetch: refetchQuery,
-  } = useQueryImagenes('useQueryImagen', {
-    enabled: false, // Deshabilita la consulta inicialmente
-  });
-
-  useEffect(() => {
-    leerArchivo();
-    refetchQuery();
-    buscarImagenPerro();
-    console.log(imgPerro);
-  }, []);
-
-  const buscarImagenPerro = () => {
-    refetchQuery();
-    console.log(imgPerro);
-    setPerroActual({
-      index: uniqid(1),
-      name: imgPerro?.dogName,
-      image: imgPerro?.dogImage.message,
-      tags: generateTags(),
-      description: getFrase(),
-    });
-    console.log(perroActual);
-    setBuscador("");
-  };
-
-
-  async function isImageLoading() {
-    if (loading || perroActual.image === undefined) {
-      buscarImagenPerro();
-      console.log("cargando", perroActual);
-      return imageLoading;
-    } else {
-      console.log("cargado --- 2", perroActual);
-      if (perroActual.image === undefined) {
-        return imageLoading;
-      } else {
-        return perroActual.image;
-      }
-    }
-  }
 
   // use effect para filtrar los perros por nombre y tags
   useEffect(() => {
@@ -187,8 +68,8 @@ function App() {
         )
       );
     } else {
-      setListaRechaAux(listaRechazados);
       setListaAcepAux(listaAceptados);
+      setListaRechaAux(listaRechazados);
     }
   }, [buscador]);
 
@@ -197,52 +78,47 @@ function App() {
     setBuscador(value);
   };
 
+  const {
+    data: PerroActual,
+    isFetching: loading,
+    isError: error,
+    isSuccess: success,
+    refetch: refetch,
+  } = useQueryImagenes();
+
+  console.log("PerroActual", PerroActual);
+
   const cambiarEstado = (item) => {
     if (listaAceptados.includes(item)) {
-      setAmbosRechazados(item);
-      eliminarAmbosAceptados(item);
+      // eliminar de la lista de aceptados
+      setListaAcepAux(listaAcepAux.filter((perro) => perro !== item));
+      setListaAceptados(listaAceptados.filter((perro) => perro !== item));
+
+      // agregar a la lista de rechazados
+      setListaRechazados([item, ...listaRechazados]);
+      setListaRechaAux([item, ...listaRechaAux]);
+
     } else if (listaRechazados.includes(item)) {
-      setAmbosAceptados(item);
-      eliminarAmbosRechazados(item);
+      // eliminar de la lista de rechazados
+      setListaRechazados(listaRechazados.filter((perro) => perro !== item));
+      setListaRechaAux(listaRechaAux.filter((perro) => perro !== item));
+
+      // agregar a la lista de aceptados
+      setListaAceptados([item, ...listaAceptados]);
+      setListaAcepAux([item, ...listaAcepAux]);
     }
-  };
-
-  const eliminarAmbosAceptados = (item) => {
-    setListaAceptados(listaAceptados.filter((perro) => perro !== item));
-    setListaAcepAux(listaAcepAux.filter((perro) => perro !== item));
-  };
-
-  const eliminarAmbosRechazados = (item) => {
-    setListaRechazados(listaRechazados.filter((perro) => perro !== item));
-    setListaRechaAux(listaRechaAux.filter((perro) => perro !== item));
-  };
-
-  const setAmbosAceptados = (item) => {
-    setListaAceptados((listaAceptados) => [item, ...listaAceptados]);
-    setListaAcepAux((listaAcepAux) => [item, ...listaAcepAux]);
-  };
-
-  const setAmbosRechazados = (item) => {
-    setListaRechazados([item, ...listaRechazados]);
-    setListaRechaAux([item, ...listaRechaAux]);
   };
 
   const aceptarPerro = () => {
-    if (perroActual.name === undefined) {
-      buscarImagenPerro();
-    } else {
-      setAmbosAceptados(perroActual);
-      buscarImagenPerro();
-    }
+    setListaAceptados((listaAceptados) => [PerroActual, ...listaAceptados]);
+    setListaAcepAux((listaAcepAux) => [PerroActual, ...listaAcepAux]);
+    refetch();
   };
 
   const rechazarPerro = () => {
-    if (perroActual.name === undefined) {
-      buscarImagenPerro();
-    } else {
-      setAmbosRechazados(perroActual);
-      buscarImagenPerro();
-    }
+    setListaRechazados((listaRechazados) => [PerroActual, ...listaRechazados]);
+    setListaRechaAux((listaRechaAux) => [PerroActual, ...listaRechaAux]);
+    refetch();
   };
 
   const tagRender = (tag) => {
@@ -272,14 +148,6 @@ function App() {
   //#A87008 fondo secundario
   //#E8CFC1 texto secundario
   //#F2BD99 texto secundario 2
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#e8cfc1",
-      },
-    },
-  });
 
   return (
     <Grid
@@ -315,7 +183,7 @@ function App() {
           <TextField
             sx={{ width: "50%" }}
             id="outlined-basic"
-            label="Buscar tag..."
+            label="Buscar"
             variant="outlined"
             value={buscador}
             onChange={handleInputChange}
@@ -325,7 +193,7 @@ function App() {
       {/* perro actual */}
       <Grid
         item
-        xs={4}
+        xs={12}
         md={4}
         direction="row"
         sx={{
@@ -356,7 +224,7 @@ function App() {
                 objectFit: "cover",
                 objectPosition: "center",
               }}
-              image={loading ? imageLoading : perroActual.image}
+              image={loading ? imageLoading : PerroActual?.imagen}
               alt="Contemplative Reptile"
             />
             {loading ? (
@@ -364,7 +232,7 @@ function App() {
             ) : (
               <><CardContent>
 
-                <Typography gutterBottom variant="h5">{perroActual.name}</Typography>
+                <Typography gutterBottom variant="h5">{PerroActual?.name}</Typography>
 
                 {/* tags */}
                 <Box
@@ -376,9 +244,9 @@ function App() {
                     flexWrap: "wrap",
                   }}
                 >
-                  {perroActual.tags.map((tag) => tagRender(tag))}
+                  {PerroActual?.tags.map((tag) => tagRender(tag))}
                 </Box>
-                <Typography>{perroActual.description}</Typography>
+                <Typography>{PerroActual?.description}</Typography>
               </CardContent><CardActions sx={{ justifyContent: "space-around" }}>
                   <Tooltip title="Rechazar">
                     <Button
@@ -465,7 +333,7 @@ function App() {
                     maxHeight: 250,
                     objectFit: "cover",
                   }}
-                  image={item.image}
+                  image={item.imagen}
                 />
                 <CardContent>
                   <Typography variant="h5" component="div" sx={{ color: "#2BD99" }} >
@@ -575,7 +443,7 @@ function App() {
                     maxHeight: "250px",
                     objectFit: "cover",
                   }}
-                  image={item.image}
+                  image={item.imagen}
                 />
                 <CardContent>
                   <Typography sx={{ color: "#E8CFC1" }} variant="h5" component="div">
@@ -622,7 +490,7 @@ function App() {
                     <Grid item xs={8} md={9} >
                       <Accordion sx={{ backgroundColor: "#e8cfc1", color: "black" }}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} >
-                          <Typography>Descripción</Typography>
+                          <Typography  >Descripción</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                           <Typography>{item.description}</Typography>

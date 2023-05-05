@@ -1,9 +1,12 @@
 import { useQuery } from "react-query";
+import axios from "axios";
 import dogNames from "dog-names";
+import { generateTags, getFrase } from "../utils/dogData";
+import uniqid from "uniqid";
 
 
-export function useQueryImagenes(params) {
-    return useQuery(["queryImagenes", params], queryImagenes, {
+export   function useQueryImagenes () {
+    return useQuery(["queryImagenes"], queryImagenes, {
         retry: 0,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
@@ -13,11 +16,13 @@ export function useQueryImagenes(params) {
     );
 }
 
-async function queryImagenes(params) {
-    return await fetch("https://dog.ceo/api/breeds/image/random").then((response) => {
-        return response.json();
-    }).then((data) => {
-        console.log("data", data);
-        return {dogName: dogNames.allRandom(), dogImage: data};
-    });
+async function queryImagenes  () {
+    const { data } = await axios.get("https://dog.ceo/api/breeds/image/random"); 
+       return {
+        imagen: data.message,
+        name: dogNames.allRandom(),
+        tags: generateTags(),
+        description: getFrase(),
+        index: uniqid(),
+    };
 }
